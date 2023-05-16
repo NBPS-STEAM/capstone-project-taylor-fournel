@@ -26,6 +26,8 @@ public class GamePanel extends JPanel implements Runnable{
         newPaddles();
         newBall();
         score = new Score(GAME_WIDTH,GAME_HEIGHT);
+        newWallUp();
+        newWall();
         this.setFocusable(true);
         this.addKeyListener(new AL());
         this.setPreferredSize(SCREEN_SIZE);
@@ -44,7 +46,11 @@ public class GamePanel extends JPanel implements Runnable{
     }
     public void newWallUp(){
         random = new Random();
-        wallup = new WallUp((GAME_WIDTH/2)-(BALL_DIAMETER/2),random.nextInt(GAME_HEIGHT-BALL_DIAMETER),BALL_DIAMETER,BALL_DIAMETER);
+        wallup = new WallUp(random.nextInt(300,700),random.nextInt(100,300),BALL_DIAMETER,BALL_DIAMETER);
+    }
+    public void newWall(){
+        random = new Random();
+        wall = new Wall(random.nextInt(300,700), random.nextInt(100,300), 10, 100);
     }
     public void paint(Graphics g) {
         image = createImage(getWidth(),getHeight());
@@ -57,8 +63,8 @@ public class GamePanel extends JPanel implements Runnable{
         paddle2.draw(g);
         ball.draw(g);
         score.draw(g);
-        //wall.draw(g, 1000, 1000);
-        //wallup.draw(g);
+        wall.draw(g);
+        wallup.draw(g);
         Toolkit.getDefaultToolkit().sync(); // I forgot to add this line of code in the video, it helps with the animation
 
     }
