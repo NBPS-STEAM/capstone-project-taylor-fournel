@@ -21,6 +21,7 @@ public class GamePanel extends JPanel implements Runnable{
     Score score;
     WallUp wallup;
     Wall wall;
+    Wall wall2;
 
     GamePanel(){
         newPaddles();
@@ -28,6 +29,7 @@ public class GamePanel extends JPanel implements Runnable{
         score = new Score(GAME_WIDTH,GAME_HEIGHT);
         newWallUp();
         newWall();
+        newWall2();
         this.setFocusable(true);
         this.addKeyListener(new AL());
         this.setPreferredSize(SCREEN_SIZE);
@@ -46,11 +48,15 @@ public class GamePanel extends JPanel implements Runnable{
     }
     public void newWallUp(){
         random = new Random();
-        wallup = new WallUp(random.nextInt(300,700),random.nextInt(100,300),BALL_DIAMETER,BALL_DIAMETER);
+        wallup = new WallUp(random.nextInt(300,700),random.nextInt(100,300),BALL_DIAMETER * 2,BALL_DIAMETER * 2);
     }
     public void newWall(){
         random = new Random();
-        wall = new Wall(random.nextInt(300,700), random.nextInt(100,300), 10, 100);
+        wall = new Wall(random.nextInt(300,700), random.nextInt(100,300), 25, 100);
+    }
+    public void newWall2(){
+        random = new Random();
+        wall2 = new Wall(random.nextInt(300,700), random.nextInt(100,300), 25, 100);
     }
     public void paint(Graphics g) {
         image = createImage(getWidth(),getHeight());
@@ -63,8 +69,20 @@ public class GamePanel extends JPanel implements Runnable{
         paddle2.draw(g);
         ball.draw(g);
         score.draw(g);
-        wall.draw(g);
-        wallup.draw(g);
+        if(wallup.getisHit()) {
+            wall.setXloc(wallup.getxloc() - 8);
+            wall.setYloc(wallup.getyloc());
+            wall2.setXloc(wallup.getxloc() + 8);
+            wall2.setYloc(wallup.getyloc());
+            if (wall.getTime() <= 0) {
+                wallup.setisHit(false);
+            }
+            wall.draw(g);
+            wall2.draw(g);
+        }
+        if(!wallup.getisHit()) {
+            wallup.draw(g);
+        }
         Toolkit.getDefaultToolkit().sync(); // I forgot to add this line of code in the video, it helps with the animation
 
     }
@@ -102,6 +120,31 @@ public class GamePanel extends JPanel implements Runnable{
                 ball.yVelocity--;
             ball.setXDirection(-ball.xVelocity);
             ball.setYDirection(ball.yVelocity);
+        }
+        if(wallup.getisHit()){
+            if(ball.intersects(wall2)) {
+                ball.xVelocity = Math.abs(ball.xVelocity);
+                ball.xVelocity++; //optional for more difficulty
+                if(ball.yVelocity>0)
+                    ball.yVelocity++; //optional for more difficulty
+                else
+                    ball.yVelocity--;
+                ball.setXDirection(ball.xVelocity);
+                ball.setYDirection(ball.yVelocity);
+            }
+            if(ball.intersects(wall)) {
+                ball.xVelocity = Math.abs(ball.xVelocity);
+                ball.xVelocity++; //optional for more difficulty
+                if(ball.yVelocity>0)
+                    ball.yVelocity++; //optional for more difficulty
+                else
+                    ball.yVelocity--;
+                ball.setXDirection(-ball.xVelocity);
+                ball.setYDirection(ball.yVelocity);
+            }
+        }
+        if(ball.intersects(wallup)){
+            wallup.setisHit(true);
         }
         //stops paddles at window edges
         if(paddle1.y<=0)
