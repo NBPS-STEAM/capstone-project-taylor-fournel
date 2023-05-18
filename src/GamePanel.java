@@ -22,6 +22,7 @@ public class GamePanel extends JPanel implements Runnable{
     WallUp wallup;
     Wall wall;
     Wall wall2;
+    SpeedDownPU speeddown;
 
     GamePanel(){
         newPaddles();
@@ -30,6 +31,7 @@ public class GamePanel extends JPanel implements Runnable{
         newWallUp();
         newWall();
         newWall2();
+        newSpeedDown();
         this.setFocusable(true);
         this.addKeyListener(new AL());
         this.setPreferredSize(SCREEN_SIZE);
@@ -58,6 +60,10 @@ public class GamePanel extends JPanel implements Runnable{
         random = new Random();
         wall2 = new Wall(random.nextInt(300,700), random.nextInt(100,300), 25, 100);
     }
+    public void newSpeedDown(){
+        random = new Random();
+        speeddown = new SpeedDownPU(random.nextInt(300,700),random.nextInt(100,300),BALL_DIAMETER * 2,BALL_DIAMETER * 2);
+    }
     public void paint(Graphics g) {
         image = createImage(getWidth(),getHeight());
         graphics = image.getGraphics();
@@ -83,6 +89,7 @@ public class GamePanel extends JPanel implements Runnable{
         if(!wallup.getisHit()) {
             wallup.draw(g);
         }
+        speeddown.draw(g);
         Toolkit.getDefaultToolkit().sync(); // I forgot to add this line of code in the video, it helps with the animation
 
     }
@@ -143,8 +150,19 @@ public class GamePanel extends JPanel implements Runnable{
                 ball.setYDirection(ball.yVelocity);
             }
         }
-        if(ball.intersects(wallup)){
-            wallup.setisHit(true);
+            if (speeddown.canbeHit()) {
+                if (ball.intersects(speeddown)) {
+                    if(ball.xVelocity>1) {
+                        ball.xVelocity--;
+                    } else if (ball.xVelocity < -1){
+                        ball.xVelocity++;
+                    }
+                }
+            }
+        if(wallup.getCount() > 250){
+            if(ball.intersects(wallup)){
+                wallup.setisHit(true);
+            }
         }
         //stops paddles at window edges
         if(paddle1.y<=0)

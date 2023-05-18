@@ -43,4 +43,7 @@ public class WallUp extends Rectangle {
     public int getyloc(){
         return y;
     }
+    public int getCount(){
+        return count;
+    }
 }
