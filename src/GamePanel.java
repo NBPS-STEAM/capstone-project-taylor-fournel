@@ -23,6 +23,8 @@ public class GamePanel extends JPanel implements Runnable{
     Wall wall;
     Wall wall2;
     SpeedDownPU speeddown;
+    Throw ballthrow1;
+    Throw ballthrow2;
 
     GamePanel(){
         newPaddles();
@@ -32,6 +34,8 @@ public class GamePanel extends JPanel implements Runnable{
         newWall();
         newWall2();
         newSpeedDown();
+        newBallThrow1();
+        newBallThrow2();
         this.setFocusable(true);
         this.addKeyListener(new AL());
         this.setPreferredSize(SCREEN_SIZE);
@@ -42,7 +46,7 @@ public class GamePanel extends JPanel implements Runnable{
 
     public void newBall() {
         random = new Random();
-        ball = new Ball((GAME_WIDTH/2)-(BALL_DIAMETER/2),random.nextInt(GAME_HEIGHT-BALL_DIAMETER),BALL_DIAMETER,BALL_DIAMETER);
+        ball = new Ball((GAME_WIDTH/2)-(BALL_DIAMETER/2),random.nextInt(GAME_HEIGHT-BALL_DIAMETER),BALL_DIAMETER,BALL_DIAMETER, 0);
     }
     public void newPaddles() {
         paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
@@ -63,6 +67,12 @@ public class GamePanel extends JPanel implements Runnable{
     public void newSpeedDown(){
         random = new Random();
         speeddown = new SpeedDownPU(random.nextInt(300,700),random.nextInt(100,300),BALL_DIAMETER * 2,BALL_DIAMETER * 2);
+    }
+    public void newBallThrow1(){
+     ballthrow1 = new Throw(370,20,20,20,1);
+    }
+    public void newBallThrow2(){
+        ballthrow2 = new Throw(600,20,20,20,2);
     }
     public void paint(Graphics g) {
         image = createImage(getWidth(),getHeight());
@@ -90,6 +100,8 @@ public class GamePanel extends JPanel implements Runnable{
             wallup.draw(g);
         }
         speeddown.draw(g);
+        ballthrow1.draw(g);
+        ballthrow2.draw(g);
         Toolkit.getDefaultToolkit().sync(); // I forgot to add this line of code in the video, it helps with the animation
 
     }
@@ -164,6 +176,68 @@ public class GamePanel extends JPanel implements Runnable{
                 wallup.setisHit(true);
             }
         }
+
+        if(ballthrow1.getNewBall() || ballthrow2.getNewBall()){
+            if(Throw.eball.y <=0) {
+                Throw.eball.setYDirection(-Throw.eball.yVelocity);
+            }
+            if(Throw.eball.y >= GAME_HEIGHT-BALL_DIAMETER) {
+                Throw.eball.setYDirection(-Throw.eball.yVelocity);
+            }
+            //bounce ball off paddles
+            if(Throw.eball.intersects(paddle1)) {
+                Throw.eball.xVelocity = Math.abs(Throw.eball.xVelocity);
+                Throw.eball.xVelocity++; //optional for more difficulty
+                if(Throw.eball.yVelocity>0)
+                    Throw.eball.yVelocity++; //optional for more difficulty
+                else
+                    Throw.eball.yVelocity--;
+                Throw.eball.setXDirection(Throw.eball.xVelocity);
+                Throw.eball.setYDirection(Throw.eball.yVelocity);
+            }
+            if(Throw.eball.intersects(paddle2)) {
+                Throw.eball.xVelocity = Math.abs(Throw.eball.xVelocity);
+                Throw.eball.xVelocity++; //optional for more difficulty
+                if(Throw.eball.yVelocity>0)
+                    Throw.eball.yVelocity++; //optional for more difficulty
+                else
+                    Throw.eball.yVelocity--;
+                Throw.eball.setXDirection(-ball.xVelocity);
+                Throw.eball.setYDirection(ball.yVelocity);
+            }
+            if(wallup.getisHit()){
+                if(Throw.eball.intersects(wall2)) {
+                    Throw.eball.xVelocity = Math.abs(ball.xVelocity);
+                    Throw.eball.xVelocity++; //optional for more difficulty
+                    if(Throw.eball.yVelocity>0)
+                        Throw.eball.yVelocity++; //optional for more difficulty
+                    else
+                        Throw.eball.yVelocity--;
+                    Throw.eball.setXDirection(Throw.eball.xVelocity);
+                    Throw.eball.setYDirection(Throw.eball.yVelocity);
+                }
+                if(Throw.eball.intersects(wall)) {
+                    Throw.eball.xVelocity = Math.abs(Throw.eball.xVelocity);
+                    Throw.eball.xVelocity++; //optional for more difficulty
+                    if(Throw.eball.yVelocity>0)
+                        Throw.eball.yVelocity++; //optional for more difficulty
+                    else
+                        Throw.eball.yVelocity--;
+                    Throw.eball.setXDirection(-Throw.eball.xVelocity);
+                    Throw.eball.setYDirection(Throw.eball.yVelocity);
+                }
+            }
+            if (speeddown.canbeHit()) {
+                if (Throw.eball.intersects(speeddown)) {
+                    if(Throw.eball.xVelocity>1) {
+                        Throw.eball.xVelocity--;
+                    } else if (ball.xVelocity < -1){
+                        Throw.eball.xVelocity++;
+                    }
+                }
+            }
+        }
+
         //stops paddles at window edges
         if(paddle1.y<=0)
             paddle1.y=0;
@@ -209,6 +283,8 @@ public class GamePanel extends JPanel implements Runnable{
         public void keyPressed(KeyEvent e) {
             paddle1.keyPressed(e);
             paddle2.keyPressed(e);
+            ballthrow1.keyPressed(e);
+            ballthrow2.keyPressed(e);
         }
         public void keyReleased(KeyEvent e) {
             paddle1.keyReleased(e);

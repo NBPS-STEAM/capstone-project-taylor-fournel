@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.*;
 
 public class Ball extends Rectangle{
@@ -7,8 +8,9 @@ public class Ball extends Rectangle{
     int xVelocity;
     int yVelocity;
     int initialSpeed = 2;
+    int id = 0;
 
-    Ball(int x, int y, int width, int height){
+    Ball(int x, int y, int width, int height, int i){
         super(x,y,width,height);
         random = new Random();
         int randomXDirection = random.nextInt(2);
@@ -20,7 +22,7 @@ public class Ball extends Rectangle{
         if(randomYDirection == 0)
             randomYDirection--;
         setYDirection(randomYDirection*initialSpeed);
-
+        this.id = i;
     }
 
     public void setXDirection(int randomXDirection) {
@@ -34,7 +36,14 @@ public class Ball extends Rectangle{
         y += yVelocity;
     }
     public void draw(Graphics g) {
-        g.setColor(Color.white);
+        if(id == 0) {
+            g.setColor(Color.white);
+        } else if (id == 1) {
+            g.setColor(Color.blue);
+        } else {
+            g.setColor(Color.red);
+        }
+
         g.fillOval(x, y, height, width);
     }
 }
