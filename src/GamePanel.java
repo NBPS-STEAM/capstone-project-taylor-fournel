@@ -238,14 +238,14 @@ public class GamePanel extends JPanel implements Runnable{
             }
             if(Throw.eball.x <=0) {
                 score.player2++;
-                newPaddles();
-                newBall();
+                ballthrow1.setNewBall(false);
+                ballthrow2.setNewBall(false);
                 System.out.println("Player 2: "+score.player2);
             }
             if(Throw.eball.x >= GAME_WIDTH-BALL_DIAMETER) {
                 score.player1++;
-                newPaddles();
-                newBall();
+                ballthrow1.setNewBall(false);
+                ballthrow2.setNewBall(false);
                 System.out.println("Player 1: "+score.player1);
             }
         }

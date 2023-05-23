@@ -54,4 +54,8 @@ public class Throw extends Rectangle {
     public boolean getNewBall() {
         return this.newBall;
     }
+
+    public void setNewBall(boolean newBall) {
+        this.newBall = newBall;
+    }
 }
